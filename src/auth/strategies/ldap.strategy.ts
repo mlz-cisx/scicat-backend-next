@@ -29,8 +29,8 @@ export class LdapStrategy extends PassportStrategy(Strategy, "ldap") {
 
     const userFilter: FilterQuery<UserDocument> = {
       $or: [
-        { username: `ldap.${payload.displayName}` },
-        { username: payload.displayName },
+        { username: `ldap.${payload.uid}` },
+        { username: payload.uid },
         { email: payload.mail as string },
       ],
     };
@@ -38,7 +38,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, "ldap") {
 
     if (!userExists) {
       const createUser: CreateUserDto = {
-        username: payload.displayName as string, //`ldap.${payload.displayName}`,
+        username: payload.uid as string, //`ldap.${payload.displayName}`,
         email: payload.mail as string,
         authStrategy: "ldap",
       };
@@ -65,9 +65,9 @@ export class LdapStrategy extends PassportStrategy(Strategy, "ldap") {
         credentials: {},
         externalId: payload.sAMAccountName as string,
         profile: {
-          displayName: payload.displayName as string,
+          displayName: payload.uid as string,
           email: payload.mail as string,
-          username: payload.displayName as string,
+          username: payload.uid as string,
           thumbnailPhoto: payload.thumbnailPhoto
             ? "data:image/jpeg;base64," +
               Buffer.from(payload.thumbnailPhoto as string, "binary").toString(
@@ -124,9 +124,9 @@ export class LdapStrategy extends PassportStrategy(Strategy, "ldap") {
     type ldapProfile = Profile & UserProfile;
     const profile = {} as ldapProfile;
 
-    profile.displayName = payload.displayName as string;
+    profile.displayName = payload.uid as string;
     profile.email = payload.mail as string;
-    profile.username = payload.displayName as string;
+    profile.username = payload.uid as string;
     profile.thumbnailPhoto = payload.thumbnailPhoto
       ? "data:image/jpeg;base64," +
         Buffer.from(payload.thumbnailPhoto as string, "binary").toString(
